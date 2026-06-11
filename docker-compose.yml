@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${DB_NAME:-bolao}
+      POSTGRES_USER: ${DB_USER:-bolao}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-bolao}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Porta NÃO exposta externamente — banco acessível apenas pela rede interna Docker
+    expose:
+      - "5432"
+
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+
+volumes:
+  pgdata:
