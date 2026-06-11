@@ -7,7 +7,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-bolao}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    # Porta NÃO exposta externamente — banco acessível apenas pela rede interna Docker
     expose:
       - "5432"
 
@@ -24,7 +23,8 @@ services:
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
   frontend:
-    build: ./frontend
+    image: node:20-alpine
+    working_dir: /app
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -32,6 +32,7 @@ services:
       - "5173:5173"
     environment:
       - VITE_API_URL=http://localhost:8000
+    command: sh -c "npm install && npm run dev -- --host"
 
 volumes:
   pgdata:
