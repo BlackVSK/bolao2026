@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getMatches, deleteMatch } from '../api/matches'
 import MatchFormModal from '../components/MatchFormModal'
+import { flagUrl } from '../constants/countries'
 
 export default function AdminMatchesPage() {
   const [matches, setMatches] = useState([])
@@ -84,7 +85,7 @@ export default function AdminMatchesPage() {
               className="bg-card border border-border rounded-xl px-4 py-3 flex items-center justify-between gap-3"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <span className="text-xl">{match.home_flag}</span>
+                <img src={flagUrl(match.home_flag)} alt={match.home_team} className="w-7 h-5 object-cover rounded" />
                 <span className="text-sm font-semibold text-white whitespace-nowrap">
                   {match.home_team}
                 </span>
@@ -92,7 +93,7 @@ export default function AdminMatchesPage() {
                 <span className="text-sm font-semibold text-white whitespace-nowrap">
                   {match.away_team}
                 </span>
-                <span className="text-xl">{match.away_flag}</span>
+                <img src={flagUrl(match.away_flag)} alt={match.away_team} className="w-7 h-5 object-cover rounded" />
 
                 {match.is_finished && (
                   <span className="text-xs bg-green-900/40 text-green-400 border border-green-700/40 px-2 py-0.5 rounded-full">

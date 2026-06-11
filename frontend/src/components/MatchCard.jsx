@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { flagUrl } from '../constants/countries'
 
 function useCountdown(targetDate) {
   const [timeLeft, setTimeLeft] = useState('')
@@ -56,7 +57,7 @@ export default function MatchCard({ match, prediction, onPredict }) {
       <div className="flex items-center justify-between gap-2">
         {/* Home team */}
         <div className="flex-1 text-center">
-          <div className="text-3xl mb-1">{match.home_flag}</div>
+          <img src={flagUrl(match.home_flag)} alt={match.home_team} className="w-12 h-8 object-cover rounded mx-auto mb-1" />
           <div className="text-sm font-semibold text-white leading-tight">{match.home_team}</div>
         </div>
 
@@ -76,7 +77,7 @@ export default function MatchCard({ match, prediction, onPredict }) {
 
         {/* Away team */}
         <div className="flex-1 text-center">
-          <div className="text-3xl mb-1">{match.away_flag}</div>
+          <img src={flagUrl(match.away_flag)} alt={match.away_team} className="w-12 h-8 object-cover rounded mx-auto mb-1" />
           <div className="text-sm font-semibold text-white leading-tight">{match.away_team}</div>
         </div>
       </div>

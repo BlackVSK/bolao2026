@@ -1,6 +1,77 @@
-import { useState } from 'react'
-import { COUNTRIES } from '../constants/countries'
+import { useState, useRef, useEffect } from 'react'
+import { COUNTRIES, flagUrl } from '../constants/countries'
 import { createMatch, updateMatch } from '../api/matches'
+
+function CountrySelect({ value, onChange, placeholder }) {
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
+  const ref = useRef(null)
+
+  const selected = COUNTRIES.find((c) => c.code === value)
+  const filtered = COUNTRIES.filter((c) =>
+    c.name.toLowerCase().includes(search.toLowerCase())
+  )
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => { setOpen((o) => !o); setSearch('') }}
+        className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm text-left flex items-center gap-2 focus:outline-none focus:border-accent"
+      >
+        {selected ? (
+          <>
+            <img src={flagUrl(selected.code)} alt={selected.name} className="w-6 h-4 object-cover rounded-sm" />
+            <span className="text-white">{selected.name}</span>
+          </>
+        ) : (
+          <span className="text-gray-500">{placeholder}</span>
+        )}
+        <span className="ml-auto text-gray-500">▾</span>
+      </button>
+
+      {open && (
+        <div className="absolute z-50 mt-1 w-full bg-card border border-border rounded-xl shadow-xl overflow-hidden">
+          <div className="p-2 border-b border-border">
+            <input
+              autoFocus
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar país..."
+              className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-accent"
+            />
+          </div>
+          <ul className="max-h-48 overflow-y-auto">
+            {filtered.length === 0 && (
+              <li className="px-3 py-2 text-sm text-gray-500">Nenhum resultado</li>
+            )}
+            {filtered.map((c) => (
+              <li
+                key={c.code}
+                onClick={() => { onChange(c.code, c.name); setOpen(false) }}
+                className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-background transition-colors ${
+                  c.code === value ? 'text-accent' : 'text-white'
+                }`}
+              >
+                <img src={flagUrl(c.code)} alt={c.name} className="w-6 h-4 object-cover rounded-sm" />
+                <span>{c.name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function MatchFormModal({ existingMatch, onClose, onSaved }) {
   const [form, setForm] = useState({
@@ -18,15 +89,13 @@ export default function MatchFormModal({ existingMatch, onClose, onSaved }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleCountryChange = (side, countryName) => {
-    const country = COUNTRIES.find((c) => c.name === countryName)
-    if (country) {
-      setForm((prev) => ({
-        ...prev,
-        [`${side}_team`]: country.name,
-        [`${side}_flag`]: country.flag,
-      }))
-    }
+  // onChange recebe (code, name) — salva code em flag e name em team
+  const handleCountryChange = (side, code, name) => {
+    setForm((prev) => ({
+      ...prev,
+      [`${side}_team`]: name,
+      [`${side}_flag`]: code,
+    }))
   }
 
   const handleSubmit = async (e) => {
@@ -34,7 +103,6 @@ export default function MatchFormModal({ existingMatch, onClose, onSaved }) {
     setLoading(true)
     setError('')
 
-    // Build payload - convert datetime to ISO with timezone offset
     const payload = {
       home_team: form.home_team,
       home_flag: form.home_flag,
@@ -80,44 +148,24 @@ export default function MatchFormModal({ existingMatch, onClose, onSaved }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            {/* Home team */}
             <div>
               <label className={labelClass}>Time da Casa</label>
-              <select
-                value={form.home_team}
-                onChange={(e) => handleCountryChange('home', e.target.value)}
-                className={inputClass}
-                required
-              >
-                <option value="">Selecione...</option>
-                {COUNTRIES.map((c) => (
-                  <option key={c.name} value={c.name}>
-                    {c.flag} {c.name}
-                  </option>
-                ))}
-              </select>
+              <CountrySelect
+                value={form.home_flag}
+                onChange={(code, name) => handleCountryChange('home', code, name)}
+                placeholder="Selecione..."
+              />
             </div>
-
-            {/* Away team */}
             <div>
               <label className={labelClass}>Time Visitante</label>
-              <select
-                value={form.away_team}
-                onChange={(e) => handleCountryChange('away', e.target.value)}
-                className={inputClass}
-                required
-              >
-                <option value="">Selecione...</option>
-                {COUNTRIES.map((c) => (
-                  <option key={c.name} value={c.name}>
-                    {c.flag} {c.name}
-                  </option>
-                ))}
-              </select>
+              <CountrySelect
+                value={form.away_flag}
+                onChange={(code, name) => handleCountryChange('away', code, name)}
+                placeholder="Selecione..."
+              />
             </div>
           </div>
 
-          {/* Date/time */}
           <div>
             <label className={labelClass}>Data e Hora</label>
             <input
@@ -129,11 +177,10 @@ export default function MatchFormModal({ existingMatch, onClose, onSaved }) {
             />
           </div>
 
-          {/* Score fields */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>
-                Gols Casa {form.home_flag && `(${form.home_flag})`}
+                Gols Casa {form.home_team && `(${form.home_team})`}
               </label>
               <input
                 type="number"
@@ -146,7 +193,7 @@ export default function MatchFormModal({ existingMatch, onClose, onSaved }) {
             </div>
             <div>
               <label className={labelClass}>
-                Gols Visitante {form.away_flag && `(${form.away_flag})`}
+                Gols Visitante {form.away_team && `(${form.away_team})`}
               </label>
               <input
                 type="number"
@@ -159,7 +206,6 @@ export default function MatchFormModal({ existingMatch, onClose, onSaved }) {
             </div>
           </div>
 
-          {/* is_finished */}
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
