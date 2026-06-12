@@ -27,11 +27,15 @@ done
 
 echo "Banco disponível."
 
-echo "Aplicando migrations..."
-python manage.py migrate --no-input
+case "$1" in
+  gunicorn*|python*)
+    echo "Aplicando migrations..."
+    python manage.py migrate --no-input
 
-echo "Coletando arquivos estáticos..."
-python manage.py collectstatic --no-input
+    echo "Coletando arquivos estáticos..."
+    python manage.py collectstatic --no-input --clear
+    ;;
+esac
 
 echo "Iniciando servidor..."
 exec "$@"

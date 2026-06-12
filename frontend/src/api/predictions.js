@@ -19,3 +19,13 @@ export const getRanking = async () => {
   const response = await api.get('/api/predictions/ranking')
   return response.data
 }
+
+export const getAdminPredictions = async (params = {}) => {
+  const response = await api.get('/api/predictions/admin', { params })
+  return response.data
+}
+
+export const upsertAdminPrediction = async (data) => {
+  const response = await api.post('/api/predictions/admin/upsert', data)
+  return response.data
+}

@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage'
 import RankingPage from './pages/RankingPage'
 import AdminMatchesPage from './pages/AdminMatchesPage'
 import AdminUsersPage from './pages/AdminUsersPage'
+import AdminPredictionsPage from './pages/AdminPredictionsPage'
 import WorldCupPage from './pages/WorldCupPage'
 import Layout from './components/Layout'
 
@@ -74,6 +75,16 @@ export default function App() {
               <AdminRoute>
                 <Layout>
                   <AdminUsersPage />
+                </Layout>
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/predictions"
+            element={
+              <AdminRoute>
+                <Layout>
+                  <AdminPredictionsPage />
                 </Layout>
               </AdminRoute>
             }

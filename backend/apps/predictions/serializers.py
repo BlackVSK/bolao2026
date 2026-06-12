@@ -14,7 +14,6 @@ class PredictionSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         from django.utils import timezone
-        # On create, match is in attrs. On update, fall back to instance.match
         match = attrs.get('match')
         if match is None and self.instance is not None:
             match = self.instance.match
@@ -23,6 +22,17 @@ class PredictionSerializer(serializers.ModelSerializer):
                 'O prazo para palpites nesta partida já encerrou.'
             )
         return attrs
+
+
+class AdminPredictionSerializer(serializers.ModelSerializer):
+    """Serializer para uso admin — expõe user_id, username e match completo."""
+    match_detail = MatchSerializer(source='match', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+
+    class Meta:
+        model = Prediction
+        fields = ['id', 'user_id', 'username', 'match', 'match_detail', 'home_score', 'away_score', 'points']
 
 
 class RankingSerializer(serializers.Serializer):

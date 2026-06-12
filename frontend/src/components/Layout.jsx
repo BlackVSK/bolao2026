@@ -18,6 +18,7 @@ export default function Layout({ children }) {
     ...(user?.is_admin
       ? [
           { to: '/admin/matches', label: '⚙️ Gerenciar Partidas' },
+          { to: '/admin/predictions', label: '🎯 Palpites' },
           { to: '/admin/users', label: '👥 Gerenciar Usuários' },
         ]
       : []),
