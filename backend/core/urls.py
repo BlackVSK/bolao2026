@@ -10,4 +10,5 @@ urlpatterns = [
     path('api/users', include('apps.users.urls')),
     path('api/matches', include('apps.matches.urls')),
     path('api/predictions', include('apps.predictions.urls')),
+    path('api/world-cup/', include('apps.world_cup.urls')),
 ]

@@ -30,6 +30,10 @@ frontend/.vite/
 # Docker
 *.log
 
+# Celery
+backend/celerybeat-schedule
+backend/celerybeat.pid
+
 # OS
 .DS_Store
 Thumbs.db

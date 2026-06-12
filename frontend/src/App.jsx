@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage'
 import RankingPage from './pages/RankingPage'
 import AdminMatchesPage from './pages/AdminMatchesPage'
 import AdminUsersPage from './pages/AdminUsersPage'
+import WorldCupPage from './pages/WorldCupPage'
 import Layout from './components/Layout'
 
 function PrivateRoute({ children }) {
@@ -75,6 +76,14 @@ export default function App() {
                   <AdminUsersPage />
                 </Layout>
               </AdminRoute>
+            }
+          />
+          <Route
+            path="/copa"
+            element={
+              <Layout>
+                <WorldCupPage />
+              </Layout>
             }
           />
           <Route path="*" element={<Navigate to="/" replace />} />

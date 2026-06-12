@@ -32,8 +32,12 @@ function useCountdown(targetDate) {
   return { timeLeft, isPast }
 }
 
-export default function MatchCard({ match, prediction, onPredict }) {
+export default function MatchCard({ match, prediction, onPredict, liveData }) {
   const { timeLeft, isPast } = useCountdown(match.match_datetime)
+
+  // Placar ao vivo vindo da API externa (quando disponível e jogo não finalizado no bolão)
+  const isLive = liveData && (liveData.live_status === 'IN_PLAY' || liveData.live_status === 'PAUSED')
+  const showLiveScore = isLive && liveData.live_home_score != null && liveData.live_away_score != null
 
   const formatDate = (dt) => {
     return new Date(dt).toLocaleString('pt-BR', {
@@ -67,11 +71,20 @@ export default function MatchCard({ match, prediction, onPredict }) {
             <div className="text-2xl font-bold text-accent">
               {match.home_score} – {match.away_score}
             </div>
+          ) : showLiveScore ? (
+            <div className="flex flex-col items-center">
+              <div className="text-2xl font-bold text-green-400">
+                {liveData.live_home_score} – {liveData.live_away_score}
+              </div>
+              <span className="text-xs text-green-400 font-semibold animate-pulse mt-0.5">
+                AO VIVO
+              </span>
+            </div>
           ) : (
             <div className="text-gray-500 font-bold text-lg">VS</div>
           )}
-          <div className={`text-xs mt-1 ${isPast ? 'text-red-400' : 'text-green-400'}`}>
-            {match.is_finished ? '✓ Finalizada' : timeLeft}
+          <div className={`text-xs mt-1 ${match.is_finished ? 'text-accent' : isPast && !showLiveScore ? 'text-red-400' : showLiveScore ? 'text-green-400' : 'text-green-400'}`}>
+            {match.is_finished ? '✓ Finalizada' : showLiveScore ? '' : timeLeft}
           </div>
         </div>
 

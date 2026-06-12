@@ -136,9 +136,11 @@ DELETE /api/matches/{id}  → remove jogo (apenas admin)
 ```
 GET    /api/predictions              → palpites do usuário logado
 POST   /api/predictions              → criar palpite (bloqueado após horário do jogo)
+GET    /api/predictions/ranking      → ranking geral de todos os usuários
 GET    /api/predictions/{id}         → detalhe do palpite
 PUT    /api/predictions/{id}         → editar palpite (bloqueado após horário do jogo)
-GET    /api/predictions/ranking      → ranking geral de todos os usuários
+PATCH  /api/predictions/{id}         → edição parcial do palpite (bloqueado após horário do jogo)
+DELETE /api/predictions/{id}         → remover palpite
 ```
 
 ### Painel admin Django
@@ -239,20 +241,8 @@ dokku config:set bolao-backend \
 ```
 
 > Quando você faz `postgres:link`, o Dokku injeta automaticamente a variável `DATABASE_URL`.
-> O settings.py usa as variáveis `DB_*` individuais — configure também:
-
-```bash
-# Pegue as credenciais do banco criado
-dokku postgres:info bolao-db
-
-# Configure as variáveis DB_* com os valores retornados acima
-dokku config:set bolao-backend \
-  DB_HOST=<host-do-postgres> \
-  DB_PORT=5432 \
-  DB_NAME=bolao_db \
-  DB_USER=postgres \
-  DB_PASSWORD=<senha-gerada>
-```
+> O `settings.py` detecta essa variável e a usa diretamente — **não é necessário configurar as variáveis `DB_*` manualmente em produção**.
+> As variáveis `DB_*` existem apenas como fallback para desenvolvimento local (via `backend/.env`).
 
 #### 3. Deploy via git
 

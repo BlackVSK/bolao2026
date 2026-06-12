@@ -27,9 +27,6 @@ done
 
 echo "Banco disponível."
 
-echo "Gerando migrations..."
-python manage.py makemigrations users matches predictions --no-input
-
 echo "Aplicando migrations..."
 python manage.py migrate --no-input
 

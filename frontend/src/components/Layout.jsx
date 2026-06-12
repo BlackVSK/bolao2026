@@ -14,6 +14,7 @@ export default function Layout({ children }) {
   const navLinks = [
     { to: '/dashboard', label: '🏟️ Partidas' },
     { to: '/ranking', label: '🏆 Ranking' },
+    { to: '/copa', label: '🌍 Copa' },
     ...(user?.is_admin
       ? [
           { to: '/admin/matches', label: '⚙️ Gerenciar Partidas' },

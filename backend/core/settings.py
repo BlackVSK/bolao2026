@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'apps.users.apps.UsersConfig',
     'apps.matches.apps.MatchesConfig',
     'apps.predictions.apps.PredictionsConfig',
+    'apps.world_cup.apps.WorldCupConfig',
 ]
 
 MIDDLEWARE = [
@@ -135,6 +136,18 @@ CORS_ALLOWED_ORIGINS = config(
     cast=Csv()
 )
 CORS_ALLOW_CREDENTIALS = True
+
+# ── Football Data API ─────────────────────────────────────────────────────────
+FOOTBALL_API_KEY = config('FOOTBALL_API_KEY', default='')
+
+# ── Celery ────────────────────────────────────────────────────────────────────
+REDIS_URL = config('REDIS_URL', default='redis://redis:6379/0')
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
 
 # ── Segurança de produção ─────────────────────────────────────────────────────
 if not DEBUG:
