@@ -7,7 +7,7 @@ class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
 
     # Keep is_staff and is_superuser only for admin users
-    # They are inherited from AbstractUser
+    # They are inherited from AbstractUser vsf
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
